@@ -8,6 +8,7 @@ import {MessagesService} from "../messages/messages.service";
 import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { CoursesServiceWithFetch } from '../services/courses-fetch.service';
+import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
 
 @Component({
     selector: 'home',
@@ -35,6 +36,7 @@ export class HomeComponent {
     })
 
     coursesService = inject(CoursesService);
+    dialog = inject(MatDialog);
 
     constructor() {
         effect(() => {
@@ -54,6 +56,45 @@ export class HomeComponent {
         } catch(err) {
             alert('Error loading courses...!')
             console.error(err);
+        }
+    }
+
+    onCourseUpdated(updatedCourse: Course) {
+        const courses = this.#courses();
+
+        const newCourses = courses.map( course =>
+            course.id === updatedCourse.id ? updatedCourse : course
+        );
+
+        this.#courses.set(newCourses);
+    }
+
+    async onAddCourse() {
+        const newCourse = await openEditCourseDialog(
+            this.dialog, 
+            {
+                mode: 'create',
+                title: 'Create New Course'
+            }
+        );
+        const newCourses = [
+            ...this.#courses(),
+            newCourse
+        ];
+        this.#courses.set(newCourses);
+    }
+
+    async onCourseDeleted(courseID: string) {
+        try {
+            await this.coursesService.deletCourse(courseID);
+            const coursas = this.#courses();
+            const newCourses = coursas.filter(
+                course => course.id !== courseID
+            );
+            this.#courses.set(newCourses);
+        } catch (err) {
+            console.error(err);
+            alert('Error deleting course...!');
         }
     }
 }

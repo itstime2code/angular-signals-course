@@ -1,6 +1,6 @@
-import {Injectable} from "@angular/core";
-import {environment} from "../../environments/environment";
-import {Course} from "../models/course.model";
+import { Injectable } from "@angular/core";
+import { environment } from "../../environments/environment";
+import { Course } from "../models/course.model";
 
 
 @Injectable({
@@ -14,6 +14,31 @@ export class CoursesServiceWithFetch {
     const response = await fetch(`${this.env.apiRoot}/courses`);
     const payload = await response.json();
     return payload.courses;
+  }
+
+  async createCourse(course: Partial<Course>): Promise<Course> {
+    const response = await fetch(`${this.env.apiRoot}/courses`, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(course)
+    });
+    return response.json();
+  }
+
+  async saveCouse(courseID: string, changes: Partial<Course>): Promise<Course> {
+    const response = await fetch(`${this.env.apiRoot}/courses`, { 
+      method: "PUT",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(changes)
+    });
+    return response.json();
+  }
+
+  async deleteCouse(courseID: string): Promise<Course> {
+    const response = await fetch(`${this.env.apiRoot}/courses/${courseID}`, {
+      method: "DELETE"
+    });
+    return response.json();
   }
 
 }

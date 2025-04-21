@@ -92,7 +92,7 @@ export async function openEditCourseDialog(
   config.disableClose = true;
   config.autoFocus = true;
   config.width = '400px';
-  config.maxHeight = '400px';
+  config.maxHeight = '90dvh';
 
   config.data = data;
 

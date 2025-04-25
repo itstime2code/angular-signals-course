@@ -9,5 +9,7 @@
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(2px);
   z-index: 10000;
+  transition: backdrop-filter ease-in-out 200ms;;
 }

@@ -35,8 +35,8 @@ export class HomeComponent {
         );
     })
 
-    coursesService = inject(CoursesService);
-    dialog = inject(MatDialog);
+    coursesService: CoursesService = inject(CoursesService);
+    dialog: MatDialog = inject(MatDialog);
 
     constructor() {
         effect(() => {

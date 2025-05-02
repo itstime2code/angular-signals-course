@@ -11,6 +11,34 @@ import {environment} from "../../environments/environment";
 })
 export class LessonsService {
 
+  http = inject(HttpClient);
+
   env = environment;
+
+  async loadCourseLessons(config: {
+    courseId?: string,
+    query?: string }
+  ): Promise<Lesson[]> {
+    const { courseId, query } = config;
+    let params = new HttpParams(); 
+
+    if (courseId) {
+      params = params.set("courseId", courseId);
+    }
+
+    if (query) {
+      params = params.set("query", query);
+    }
+
+    const lessons$ = this.http.get<GetLessonsResponse>(
+      `${environment.apiRoot}/search-lessons`,
+      {
+        params
+      }
+    );
+    const response =  await firstValueFrom(lessons$);
+
+    return response.lessons;
+  }
 
 }

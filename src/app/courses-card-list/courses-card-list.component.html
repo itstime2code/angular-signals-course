@@ -8,7 +8,7 @@
             <p>{{ course.longDescription }}</p>
         </div>
         <div class="course-actions">
-            <button class="btn">VIEW</button>
+            <button class="btn" [routerLink]="['courses', course.id]">VIEW</button>
             <button class="btn" (click)="onEditCourse(course)">EDIT</button>
             <img
                 class="delete"

@@ -1,9 +1,10 @@
-import {Component, computed, effect, inject, Injector, signal} from '@angular/core';
+import {Component, computed, effect, ElementRef, inject, Injector, signal, viewChild} from '@angular/core';
 import {CoursesService} from "../services/courses.service";
 import {Course, sortCoursesBySeqNo} from "../models/course.model";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {CoursesCardListComponent} from "../courses-card-list/courses-card-list.component";
 import {MatDialog} from "@angular/material/dialog";
+import {MatTooltip, MatTooltipModule} from "@angular/material/tooltip";
 import {MessagesService} from "../messages/messages.service";
 import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
@@ -15,7 +16,8 @@ import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.c
     imports: [
         MatTabGroup,
         MatTab,
-        CoursesCardListComponent
+        MatTooltipModule,
+        CoursesCardListComponent,
     ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
@@ -39,11 +41,20 @@ export class HomeComponent {
     dialog: MatDialog = inject(MatDialog);
     messagesService = inject(MessagesService);
 
+    beginnerList = viewChild<CoursesCardListComponent>("beginnerList");
+    advancedList = viewChild<CoursesCardListComponent>("advancedList");
+    beginnerTooltip = viewChild("beginnerList", { read: MatTooltip });
+    advancedTooltip = viewChild("advancedList", {read: MatTooltip});
+
     constructor() {
         effect(() => {
             console.log('Beginner courses: ', this.beginnerCourses());
             console.log('Advanced courses: ', this.advancedCourses());
         })
+
+        effect(() => console.log(`Beginner List:`, this.beginnerList()));
+        effect(() => console.log(`Beginner Tooltip :`, this.beginnerTooltip()))
+        effect(() => console.log(`Advanced Tooltip :`, this.advancedTooltip()))
 
         this.loadAllCourses().then(() => {
             console.log('All courses loaded: ', this.#courses());

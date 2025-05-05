@@ -9,6 +9,8 @@
     <mat-tab label="Beginners">
 
       <courses-card-list
+        #beginnerList
+        matTooltip="Beginner Courses"
         [courses]="beginnerCourses()"
         (courseUpdated)="onCourseUpdated($event)"
         (courseDeleted)="onCourseDeleted($event)"
@@ -19,6 +21,8 @@
     <mat-tab label="Advanced">
 
       <courses-card-list
+        #advancedList
+        matTooltip="Advanced Courses"
         [courses]="advancedCourses()"
         (courseUpdated)="onCourseUpdated($event)"
         (courseDeleted)="onCourseDeleted($event)"

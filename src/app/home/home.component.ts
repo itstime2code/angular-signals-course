@@ -6,7 +6,7 @@ import {CoursesCardListComponent} from "../courses-card-list/courses-card-list.c
 import {MatDialog} from "@angular/material/dialog";
 import {MatTooltip, MatTooltipModule} from "@angular/material/tooltip";
 import {MessagesService} from "../messages/messages.service";
-import {catchError, from, throwError} from "rxjs";
+import {catchError, from, interval, single, startWith, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { CoursesServiceWithFetch } from '../services/courses-fetch.service';
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
@@ -40,21 +40,32 @@ export class HomeComponent {
     coursesService: CoursesService = inject(CoursesService);
     dialog: MatDialog = inject(MatDialog);
     messagesService = inject(MessagesService);
+    injector = inject(Injector);
 
     beginnerList = viewChild<CoursesCardListComponent>("beginnerList");
     advancedList = viewChild<CoursesCardListComponent>("advancedList");
     beginnerTooltip = viewChild("beginnerList", { read: MatTooltip });
     advancedTooltip = viewChild("advancedList", {read: MatTooltip});
 
-    constructor() {
-        effect(() => {
-            console.log('Beginner courses: ', this.beginnerCourses());
-            console.log('Advanced courses: ', this.advancedCourses());
-        })
+    courses$ = toObservable(this.#courses);
 
-        effect(() => console.log(`Beginner List:`, this.beginnerList()));
-        effect(() => console.log(`Beginner Tooltip :`, this.beginnerTooltip()))
-        effect(() => console.log(`Advanced Tooltip :`, this.advancedTooltip()))
+    constructor() {
+        // this.courses$.subscribe(
+        //     courses => console.log(`courses$: `, courses)
+        // );
+
+        // effect(() => {
+        //     console.log('courses: ', this.#courses());
+        // })
+
+        // effect(() => {
+        //     console.log('Beginner courses: ', this.beginnerCourses());
+        //     console.log('Advanced courses: ', this.advancedCourses());
+        // })
+
+        // effect(() => console.log(`Beginner List:`, this.beginnerList()));
+        // effect(() => console.log(`Beginner Tooltip :`, this.beginnerTooltip()))
+        // effect(() => console.log(`Advanced Tooltip :`, this.advancedTooltip()))
 
         this.loadAllCourses().then(() => {
             console.log('All courses loaded: ', this.#courses());
@@ -113,5 +124,57 @@ export class HomeComponent {
             console.error(err);
             alert('Error deleting course...!');
         }
+    }
+
+    onToObservable() {
+        // const courses$ = toObservable(
+        //     this.#courses,
+        //     { injector: this.injector }
+        // );
+
+        // courses$.subscribe(
+        //     courses => console.log(`courses$: `, courses)
+        // );
+
+        const numbers = signal(0);
+        numbers.set(1);
+        numbers.set(2);
+        numbers.set(3);
+        const numbers$ = toObservable(
+            numbers,
+            { injector: this.injector }
+            );
+        numbers.set(4);
+        numbers$.subscribe(
+            val => console.log(`numbers$: `, val)
+        );
+        numbers.set(5);
+    }
+
+    onToSignal() {
+        // const courses = toSignal(
+        //     this.courses$,
+        //     {
+        //         injector: this.injector,
+
+        //     }
+        // );
+        // effect(() => {
+        //     console.log(`courses: `, courses());
+        // }, { injector: this.injector });
+
+        const numbers$ = interval(1000).pipe(
+            startWith(0)
+        );
+        const numbers = toSignal(
+            numbers$,
+            {
+                injector: this.injector,
+                requireSync: true
+            }
+        );
+        effect(() => {
+            console.log(`Numbers: `, numbers());
+        }, { injector: this.injector });
     }
 }

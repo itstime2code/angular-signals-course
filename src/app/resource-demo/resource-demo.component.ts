@@ -16,7 +16,17 @@ export class ResourceDemoComponent {
 
   search = signal<string>('');
 
-  lessons = signal<Lesson[]>([])
+  lessons = resource<Lesson[], { search: string }>({
+    request: () => ({ search: this.search() }),
+    loader: async ({ request, abortSignal }) => {
+      const response = await fetch(
+        `${this.env.apiRoot}/search-lessons?query=${request.search}&courseId=18`,
+        { signal: abortSignal }
+      );
+      const json = await response.json();
+      return json.lessons;
+    }
+  });
 
   constructor() {
 
